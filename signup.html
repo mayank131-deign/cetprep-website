@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - CETPrep.in</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-custom-blue { background-color: #1E90FF; }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
+        <div class="text-center mb-8">
+            <a href="/index.html" class="text-3xl font-bold text-custom-blue">CETPrep.in</a>
+            <h2 class="mt-2 text-2xl font-bold text-gray-800">Create Your Account</h2>
+            <p class="text-gray-500">Join to start your smarter prep journey!</p>
+        </div>
+        
+        <!-- Sign Up Form -->
+        <form id="signup-form" class="space-y-6">
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                <input id="email" name="email" type="email" autocomplete="email" required class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-custom-blue focus:border-custom-blue">
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input id="password" name="password" type="password" autocomplete="new-password" required class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-custom-blue focus:border-custom-blue" minlength="6">
+                <p class="mt-1 text-xs text-gray-500">Password must be at least 6 characters long.</p>
+            </div>
+
+            <div>
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-custom-blue hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-custom-blue">
+                    Create Account
+                </button>
+            </div>
+        </form>
+
+        <!-- Message Div -->
+        <div id="message" class="mt-4 text-center text-sm font-medium"></div>
+
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600">
+                Already have an account?
+                <a href="/login.html" class="font-medium text-custom-blue hover:underline">Log in here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Scripts -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA27xWBpD6sf_eXyzoVrj6ed6zu2VkMQKc",
+            authDomain: "cetprep-backend.firebaseapp.com",
+            projectId: "cetprep-backend",
+            storageBucket: "cetprep-backend.firebasestorage.app",
+            messagingSenderId: "456401176351",
+            appId: "1:456401176351:web:30bb6b333a0e8a42af122a"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const signupForm = document.getElementById('signup-form');
+        const messageDiv = document.getElementById('message');
+
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const email = signupForm.email.value;
+            const password = signupForm.password.value;
+            
+            messageDiv.textContent = 'Creating account...';
+            messageDiv.classList.remove('text-red-500', 'text-green-500');
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed up successfully
+                    const user = userCredential.user;
+                    messageDiv.textContent = 'Account created successfully! You can now log in.';
+                    messageDiv.classList.add('text-green-500');
+                    signupForm.reset();
+                    // Redirect to login page after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.error("Signup Error:", errorCode, errorMessage);
+                    
+                    let friendlyMessage = 'An error occurred. Please try again.';
+                    if (errorCode === 'auth/email-already-in-use') {
+                        friendlyMessage = 'This email is already in use. Please try to log in.';
+                    } else if (errorCode === 'auth/weak-password') {
+                        friendlyMessage = 'The password is too weak. Please use at least 6 characters.';
+                    }
+                    messageDiv.textContent = friendlyMessage;
+                    messageDiv.classList.add('text-red-500');
+                });
+        });
+    </script>
+
+</body>
+</html>
