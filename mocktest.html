@@ -138,9 +138,29 @@
         const navigationButtons = document.getElementById('navigation-buttons');
         const questionIndicator = document.getElementById('question-indicator');
         const restartBtn = document.getElementById('restart-btn');
+        const timerElement = document.getElementById('timer');
 
         let currentQuestionIndex = 0;
         let userAnswers = new Array(quizData.length).fill(null);
+        let timeRemaining = 30 * 60; // 30 minutes in seconds
+        let timerInterval;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                
+                // Display the time, adding a leading zero if seconds are less than 10
+                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerElement.textContent = "0:00";
+                    showResults(); // Auto-submit when time is up
+                }
+            }, 1000);
+        }
 
         function showQuestion(index) {
             const questionData = quizData[index];
@@ -174,43 +194,5 @@
                 submitBtn.classList.remove('hidden');
             } else {
                 nextBtn.classList.remove('hidden');
-                submitBtn.classList.add('hidden');
-            }
-        }
-        
-        function showResults() {
-            let score = 0;
-            quizData.forEach((q, index) => {
-                if (userAnswers[index] === q.answer) {
-                    score++;
-                }
-            });
-            scoreElement.textContent = `${score} / ${quizData.length}`;
-            quizContainer.classList.add('hidden');
-            navigationButtons.classList.add('hidden');
-            resultContainer.classList.remove('hidden');
-        }
+                submitBtn
 
-        nextBtn.addEventListener('click', () => {
-            if (currentQuestionIndex < quizData.length - 1) {
-                currentQuestionIndex++;
-                showQuestion(currentQuestionIndex);
-            }
-        });
-
-        prevBtn.addEventListener('click', () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                showQuestion(currentQuestionIndex);
-            }
-        });
-        
-        submitBtn.addEventListener('click', showResults);
-        restartBtn.addEventListener('click', () => window.location.reload());
-
-        // Initial load
-        showQuestion(currentQuestionIndex);
-    </script>
-
-</body>
-</html>
