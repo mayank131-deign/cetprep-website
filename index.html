@@ -46,13 +46,13 @@
     <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <!-- Logo -->
-            <a href="#" class="text-2xl font-bold text-custom-blue">
+            <a href="/index.html" class="text-2xl font-bold text-custom-blue">
                 CETPrep.in
             </a>
             <!-- Desktop Menu Links -->
             <div class="hidden md:flex items-center space-x-6">
-                <a href="#" class="text-gray-600 hover:text-custom-blue nav-link font-medium">Home</a>
-                <a href="#" class="text-gray-600 hover:text-custom-blue nav-link font-medium">Mock Tests</a>
+                <a href="/index.html" class="text-gray-600 hover:text-custom-blue nav-link font-medium">Home</a>
+                <a href="/mock-test.html" class="text-gray-600 hover:text-custom-blue nav-link font-medium">Mock Tests</a>
                 <a href="#" class="text-gray-600 hover:text-custom-blue nav-link font-medium">Notes & Resources</a>
                 <a href="#" class="text-gray-600 hover:text-custom-blue nav-link font-medium">Mentor Connect</a>
                 <a href="#" class="text-gray-600 hover:text-custom-blue nav-link font-medium">College Predictor</a>
@@ -64,87 +64,4 @@
             <!-- Mobile Menu Button (Hamburger) -->
             <div class="md:hidden">
                 <button id="menu-btn" class="text-gray-800 focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                    </svg>
-                </button>
-            </div>
-        </nav>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="mobile-menu md:hidden bg-white border-t border-gray-200 transform -translate-x-full absolute top-full left-0 w-full">
-            <a href="#" class="block px-6 py-3 text-gray-600 hover:bg-gray-50">Home</a>
-            <a href="#" class="block px-6 py-3 text-gray-600 hover:bg-gray-50">Mock Tests</a>
-            <a href="#" class="block px-6 py-3 text-gray-600 hover:bg-gray-50">Notes & Resources</a>
-            <a href="#" class="block px-6 py-3 text-gray-600 hover:bg-gray-50">Mentor Connect</a>
-            <a href="#" class="block px-6 py-3 text-gray-600 hover:bg-gray-50">College Predictor</a>
-            <div class="px-6 py-4">
-                 <a href="/login.html" class="block w-full text-center bg-custom-blue text-white font-semibold px-5 py-2 rounded-lg shadow-sm hover:bg-opacity-90 cta-button">
-                    Login / Sign Up
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <main class="bg-gray-50">
-        <div class="container mx-auto flex flex-col md:flex-row items-center justify-center px-6 min-h-screen pt-24 pb-12 md:pt-16 md:pb-0">
-            <!-- Left Column: Text Content -->
-            <div class="md:w-3/5 lg:w-1/2 text-center md:text-left">
-                <!-- Headline -->
-                <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-4">
-                    Crack CET With <span class="text-custom-blue">Smarter Prep</span>
-                </h1>
-                <!-- Subheading/Description -->
-                <p class="text-lg md:text-xl text-gray-600 max-w-xl mx-auto md:mx-0 mb-8">
-                    Your all-in-one platform for mock tests, expert notes, and personalized guidance to ace the Common Entrance Test.
-                </p>
-                <!-- Call to Action Buttons -->
-                <div class="flex flex-col sm:flex-row justify-center md:justify-start items-center gap-4">
-                    <a href="#" class="w-full sm:w-auto bg-custom-blue text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-opacity-90 cta-button text-lg">
-                        Start a Free Mock Test
-                    </a>
-                    <a href="#" class="w-full sm:w-auto bg-white text-custom-blue border-2 border-custom-blue font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-gray-100 cta-button text-lg">
-                        Explore Resources
-                    </a>
-                </div>
-            </div>
-            <!-- Right Column: Illustration -->
-            <div class="md:w-2/5 lg:w-1/2 flex justify-center md:justify-end mt-12 md:mt-0">
-                <svg class="w-4/5 h-auto" viewBox="0 0 551 405" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="259.98" y="147.331" width="280.058" height="246.52" rx="12" fill="#E0E7FF"/>
-                    <rect x="274.96" y="162.311" width="250.096" height="15.9805" rx="7.99023" fill="#C7D2FE"/>
-                    <rect x="274.96" y="196.262" width="250.096" height="8.98884" rx="4.49442" fill="#C7D2FE"/>
-                    <rect x="274.96" y="222.233" width="180.069" height="8.98884" rx="4.49442" fill="#C7D2FE"/>
-                    <rect x="274.96" y="255.194" width="250.096" height="8.98884" rx="4.49442" fill="#C7D2FE"/>
-                    <rect x="274.96" y="281.165" width="120.046" height="8.98884" rx="4.49442" fill="#C7D2FE"/>
-                    <rect x="274.96" y="314.126" width="250.096" height="8.98884" rx="4.49442" fill="#C7D2FE"/>
-                    <rect x="274.96" y="340.097" width="150.06" height="8.98884" rx="4.49442" fill="#C7D2FE"/>
-                    <path d="M192.112 120.046C192.112 108.995 183.125 100.008 172.074 100.008H107.054C96.0028 100.008 87.0156 108.995 87.0156 120.046V393.851H242.067C253.118 393.851 262.105 384.864 262.105 373.813V222.233L192.112 120.046Z" fill="#A5B4FC"/>
-                    <path d="M192.112 120.046L262.105 222.233V373.813C262.105 384.864 253.118 393.851 242.067 393.851H192.112V120.046Z" fill="#818CF8"/>
-                    <path d="M172.074 100.008H107.054C96.0028 100.008 87.0156 108.995 87.0156 120.046V147.331H192.112V120.046C192.112 108.995 183.125 100.008 172.074 100.008Z" fill="#C7D2FE"/>
-                    <circle cx="217.132" cy="62.9466" r="52.932" fill="#1E90FF"/>
-                    <path d="M217.132 15.9805C228.183 15.9805 237.17 24.9677 237.17 35.0189C237.17 46.0701 228.183 55.0573 217.132 55.0573C206.081 55.0573 197.094 46.0701 197.094 35.0189C197.094 24.9677 206.081 15.9805 217.132 15.9805Z" fill="#FFFFFF"/>
-                    <path d="M239.173 103.011C238.271 95.8242 233.91 89.4363 227.674 85.3951C220.043 80.4551 210.923 80.4551 203.292 85.3951C197.056 89.4363 192.695 95.8242 191.793 103.011H239.173Z" fill="#FFFFFF"/>
-                    <rect x="11.0039" y="246.52" width="280.058" height="147.331" rx="12" fill="#FFFFFF" stroke="#E0E7FF" stroke-width="4"/>
-                    <rect x="36.0117" y="271.185" width="229.048" height="15.9805" rx="7.99023" fill="#E0E7FF"/>
-                    <rect x="36.0117" y="305.136" width="229.048" height="8.98884" rx="4.49442" fill="#F3F4F6"/>
-                    <rect x="36.0117" y="328.117" width="180.069" height="8.98884" rx="4.49442" fill="#F3F4F6"/>
-                    <rect x="36.0117" y="357.088" width="229.048" height="8.98884" rx="4.49442" fill="#F3F4F6"/>
-                </svg>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        // JavaScript to toggle the mobile menu
-        const menuBtn = document.getElementById('menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('-translate-x-full');
-        });
-    </script>
-
-</body>
-</html>
+                    <svg class="w-6 h-
