@@ -24,9 +24,7 @@
     <header class="bg-white shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="/index.html" class="text-2xl font-bold text-custom-blue">CETPrep.in</a>
-            <div id="user-info" class="text-gray-600">
-                <!-- User email will be shown here -->
-            </div>
+            <div id="user-info" class="text-gray-600"></div>
         </nav>
     </header>
 
@@ -35,36 +33,39 @@
         <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
 
             <!-- Test Header -->
-            <div class="flex justify-between items-center border-b pb-4 mb-6">
+            <div id="test-header" class="flex justify-between items-center border-b pb-4 mb-6">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-800">Physics Practice Test #1</h1>
-                    <p class="text-gray-500">Subject: Physics | Total Questions: 5</p>
+                    <h1 id="test-title" class="text-3xl font-bold text-gray-800">Loading Test...</h1>
+                    <p id="test-subtitle" class="text-gray-500"></p>
                 </div>
                 <div class="text-right">
                     <div class="text-lg font-semibold text-gray-700">Time Left</div>
-                    <div id="timer" class="text-2xl font-bold text-custom-blue">30:00</div>
+                    <div id="timer" class="text-2xl font-bold text-custom-blue">--:--</div>
                 </div>
             </div>
 
-            <!-- Quiz Container -->
-            <div id="quiz-container">
-                <!-- Questions will be dynamically inserted here -->
+            <!-- Loading Spinner -->
+            <div id="loader" class="flex justify-center items-center h-64">
+                <svg class="animate-spin h-12 w-12 text-custom-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
             </div>
+
+            <!-- Quiz Container -->
+            <div id="quiz-container" class="hidden"></div>
 
              <!-- Result Container -->
             <div id="result-container" class="hidden text-center">
                 <h2 class="text-4xl font-bold text-gray-800 mb-4">Test Complete!</h2>
                 <p class="text-2xl text-gray-600 mb-2">Your Score:</p>
                 <p id="score" class="text-6xl font-bold text-custom-blue mb-8">0 / 0</p>
-                <button id="restart-btn" class="bg-custom-blue text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all text-lg">
-                    Take Another Test
-                </button>
+                <a href="/mock-test-library.html" class="bg-custom-blue text-white font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-opacity-90 transition-all text-lg">
+                    Back to Test Library
+                </a>
             </div>
             
             <!-- Navigation Buttons -->
-            <div id="navigation-buttons" class="mt-8 flex justify-between items-center">
+            <div id="navigation-buttons" class="hidden mt-8 flex justify-between items-center">
                 <button id="prev-btn" class="bg-gray-200 text-gray-700 font-semibold px-6 py-2 rounded-lg hover:bg-gray-300 transition-all disabled:opacity-50" disabled>Previous</button>
-                <div id="question-indicator" class="text-gray-600 font-medium">Question 1 / 5</div>
+                <div id="question-indicator" class="text-gray-600 font-medium"></div>
                 <button id="next-btn" class="bg-custom-blue text-white font-semibold px-6 py-2 rounded-lg hover:bg-opacity-90 transition-all">Next</button>
                 <button id="submit-btn" class="hidden bg-green-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-green-600 transition-all">Submit Test</button>
             </div>
@@ -72,10 +73,10 @@
     </main>
     
     <script type="module">
-        // Firebase and Auth setup
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyA27xWBpD6sf_eXyzoVrj6ed6zu2VkMQKc",
             authDomain: "cetprep-backend.firebaseapp.com",
@@ -87,48 +88,13 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Check user auth state
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in.
-                document.getElementById('user-info').textContent = `Logged in as: ${user.email}`;
-            } else {
-                // User is not signed in, redirect to login page
-                window.location.href = '/login.html';
-            }
-        });
-
-        // --- MOCK TEST LOGIC ---
-
-        const quizData = [
-            {
-                question: "What is the SI unit of force?",
-                options: ["Joule", "Watt", "Newton", "Pascal"],
-                answer: "Newton"
-            },
-            {
-                question: "Which of the following is a vector quantity?",
-                options: ["Speed", "Distance", "Mass", "Velocity"],
-                answer: "Velocity"
-            },
-            {
-                question: "The rate of change of velocity is called:",
-                options: ["Speed", "Acceleration", "Momentum", "Inertia"],
-                answer: "Acceleration"
-            },
-            {
-                question: "What is the formula for kinetic energy?",
-                options: ["mgh", "1/2 mv^2", "ma", "F/A"],
-                answer: "1/2 mv^2"
-            },
-            {
-                question: "Which law is also known as the law of inertia?",
-                options: ["Newton's First Law", "Newton's Second Law", "Newton's Third Law", "Law of Gravitation"],
-                answer: "Newton's First Law"
-            }
-        ];
-
+        // --- DOM ELEMENTS ---
+        const loader = document.getElementById('loader');
+        const testHeader = document.getElementById('test-header');
+        const testTitle = document.getElementById('test-title');
+        const testSubtitle = document.getElementById('test-subtitle');
         const quizContainer = document.getElementById('quiz-container');
         const resultContainer = document.getElementById('result-container');
         const scoreElement = document.getElementById('score');
@@ -137,26 +103,82 @@
         const submitBtn = document.getElementById('submit-btn');
         const navigationButtons = document.getElementById('navigation-buttons');
         const questionIndicator = document.getElementById('question-indicator');
-        const restartBtn = document.getElementById('restart-btn');
         const timerElement = document.getElementById('timer');
 
+        // --- STATE VARIABLES ---
+        let currentUser = null;
+        let currentTestId = null;
+        let quizData = [];
         let currentQuestionIndex = 0;
-        let userAnswers = new Array(quizData.length).fill(null);
-        let timeRemaining = 30 * 60; // 30 minutes in seconds
+        let userAnswers = [];
         let timerInterval;
 
-        function startTimer() {
+        // --- AUTHENTICATION ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('user-info').textContent = `Logged in as: ${user.email}`;
+                loadTest();
+            } else {
+                window.location.href = '/login.html';
+            }
+        });
+
+        // --- CORE LOGIC ---
+        async function loadTest() {
+            const params = new URLSearchParams(window.location.search);
+            currentTestId = params.get('testId');
+
+            if (!currentTestId) {
+                quizContainer.innerHTML = `<p class="text-center text-red-500">No test selected. Please go back to the library.</p>`;
+                loader.classList.add('hidden');
+                return;
+            }
+
+            try {
+                const docRef = doc(db, "tests", currentTestId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const testData = docSnap.data();
+                    quizData = testData.questions;
+                    userAnswers = new Array(quizData.length).fill(null);
+
+                    // Update UI with test details
+                    testTitle.textContent = testData.title;
+                    testSubtitle.textContent = `Total Questions: ${quizData.length}`;
+                    
+                    loader.classList.add('hidden');
+                    quizContainer.classList.remove('hidden');
+                    navigationButtons.classList.remove('hidden');
+                    
+                    showQuestion(0);
+                    startTimer(quizData.length); // Assume 1.5 minutes per question for timer
+                } else {
+                    console.log("No such document!");
+                    testTitle.textContent = "Test Not Found";
+                    loader.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Error fetching test: ", error);
+                testTitle.textContent = "Error Loading Test";
+                loader.classList.add('hidden');
+            }
+        }
+
+        function startTimer(questionCount) {
+            let timeRemaining = Math.floor(questionCount * 90); // 90 seconds per question
             timerInterval = setInterval(() => {
                 timeRemaining--;
                 const minutes = Math.floor(timeRemaining / 60);
                 const seconds = timeRemaining % 60;
                 
-                timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
                 if (timeRemaining <= 0) {
                     clearInterval(timerInterval);
-                    timerElement.textContent = "0:00";
-                    showResults(); // Auto-submit when time is up
+                    timerElement.textContent = "00:00";
+                    submitAndShowResults();
                 }
             }, 1000);
         }
@@ -165,10 +187,10 @@
             const questionData = quizData[index];
             quizContainer.innerHTML = `
                 <div class="mb-4">
-                    <h2 class="text-2xl font-semibold text-gray-800">${index + 1}. ${questionData.question}</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800">${index + 1}. ${questionData.questionText}</h2>
                 </div>
                 <div class="space-y-4">
-                    ${questionData.options.map((option, i) => `
+                    ${questionData.options.map((option) => `
                         <label class="option-label flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all">
                             <input type="radio" name="question${index}" value="${option}" class="h-5 w-5 text-custom-blue focus:ring-custom-blue" ${userAnswers[index] === option ? 'checked' : ''}>
                             <span class="ml-4 text-lg text-gray-700">${option}</span>
@@ -197,20 +219,39 @@
             }
         }
         
-        function showResults() {
+        async function submitAndShowResults() {
             clearInterval(timerInterval); // Stop the timer
             let score = 0;
             quizData.forEach((q, index) => {
-                if (userAnswers[index] === q.answer) {
+                if (userAnswers[index] === q.correctAnswer) {
                     score++;
                 }
             });
+
+            // NOW WE SAVE THE SCORE TO FIRESTORE!
+            if (currentUser && currentTestId) {
+                try {
+                    await addDoc(collection(db, "results"), {
+                        userId: currentUser.uid,
+                        testId: currentTestId,
+                        score: score,
+                        totalQuestions: quizData.length,
+                        completedAt: new Date()
+                    });
+                    console.log("Result saved successfully!");
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                }
+            }
+
             scoreElement.textContent = `${score} / ${quizData.length}`;
             quizContainer.classList.add('hidden');
             navigationButtons.classList.add('hidden');
+            testHeader.classList.add('hidden');
             resultContainer.classList.remove('hidden');
         }
 
+        // --- EVENT LISTENERS ---
         nextBtn.addEventListener('click', () => {
             if (currentQuestionIndex < quizData.length - 1) {
                 currentQuestionIndex++;
@@ -225,14 +266,8 @@
             }
         });
         
-        submitBtn.addEventListener('click', showResults);
-        restartBtn.addEventListener('click', () => window.location.reload());
-
-        // Initial load
-        showQuestion(currentQuestionIndex);
-        startTimer();
+        submitBtn.addEventListener('click', submitAndShowResults);
 
     </script>
-
 </body>
 </html>
