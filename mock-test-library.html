@@ -12,45 +12,30 @@
         body { font-family: 'Inter', sans-serif; }
         .bg-custom-blue { background-color: #1E90FF; }
         .text-custom-blue { color: #1E90FF; }
-        .test-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .test-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
     </style>
 </head>
 <body class="bg-gray-50">
-
-    <!-- Header -->
     <header class="bg-white shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/index.html" class="text-2xl font-bold text-custom-blue">CETPrep.in</a>
-            <div id="user-info" class="text-gray-600">
-                 <!-- User email will be shown here -->
-            </div>
+            <a href="index.html" class="text-2xl font-bold text-custom-blue">CETPrep.in</a>
+            <div id="user-info" class="text-gray-600"></div>
         </nav>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto p-6 mt-8">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">Mock Test Library</h1>
-            <p class="text-lg text-gray-500 mb-8">Choose a test from the list below to begin your practice session.</p>
-
-            <!-- Test Cards Container -->
-            <div id="test-library-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Loading Spinner -->
-                <div id="loader" class="col-span-full flex justify-center items-center h-48">
-                    <svg class="animate-spin h-10 w-10 text-custom-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </div>
-                <!-- Test cards will be dynamically inserted here by JavaScript -->
-            </div>
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800">Mock Test Library</h1>
+            <p class="text-lg text-gray-500 mt-2">Choose a test from the list below to begin your practice session.</p>
         </div>
+
+        <div id="loader" class="flex justify-center items-center py-16">
+            <svg class="animate-spin h-10 w-10 text-custom-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        </div>
+
+        <div id="tests-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        </div>
+
+        <p id="no-tests-message" class="hidden text-center text-gray-500 py-16">No mock tests available at the moment. Please check back later.</p>
     </main>
 
     <script type="module">
@@ -71,55 +56,53 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const testLibraryContainer = document.getElementById('test-library-container');
         const loader = document.getElementById('loader');
+        const testsContainer = document.getElementById('tests-container');
+        const noTestsMessage = document.getElementById('no-tests-message');
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('user-info').textContent = `Logged in as: ${user.email}`;
                 loadTests();
             } else {
-                window.location.href = '/login.html';
+                window.location.href = 'login.html';
             }
         });
 
         async function loadTests() {
             try {
-                // Get all documents from the "tests" collection
-                const querySnapshot = await getDocs(collection(db, "tests"));
+                const testsCollection = collection(db, "tests");
+                const testSnapshot = await getDocs(testsCollection);
                 
-                // Clear the container and hide the loader
-                testLibraryContainer.innerHTML = '';
-                
-                if (querySnapshot.empty) {
-                     testLibraryContainer.innerHTML = `<p class="col-span-full text-center text-gray-500">No mock tests available at the moment. Please check back later.</p>`;
-                     return;
+                loader.classList.add('hidden');
+
+                if (testSnapshot.empty) {
+                    noTestsMessage.classList.remove('hidden');
+                    return;
                 }
 
-                querySnapshot.forEach((doc) => {
+                testSnapshot.forEach((doc) => {
                     const test = doc.data();
                     const testId = doc.id;
-                    const card = document.createElement('a');
-                    card.href = `/mock-test.html?testId=${testId}`; // Link to the test page with the test ID
-                    card.className = 'test-card bg-white p-6 rounded-lg shadow-md block';
+                    const testCard = document.createElement('div');
+                    testCard.className = 'bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all';
                     
-                    card.innerHTML = `
-                        <h3 class="text-xl font-bold text-gray-800">${test.title}</h3>
-                        <p class="text-gray-500 mt-2">${test.questions.length} Questions</p>
-                        <div class="mt-4 bg-custom-blue text-white text-center font-semibold py-2 rounded-lg">
+                    testCard.innerHTML = `
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">${test.title}</h3>
+                        <p class="text-gray-600 mb-4">A comprehensive test to challenge your skills.</p>
+                        <a href="mock-test.html?testId=${testId}" class="inline-block w-full text-center bg-custom-blue text-white font-semibold py-3 px-4 rounded-lg hover:bg-opacity-90">
                             Start Test
-                        </div>
+                        </a>
                     `;
-                    testLibraryContainer.appendChild(card);
+                    testsContainer.appendChild(testCard);
                 });
 
             } catch (error) {
-                console.error("Error loading tests: ", error);
+                console.error("Error loading tests:", error);
                 loader.classList.add('hidden');
-                testLibraryContainer.innerHTML = `<p class="col-span-full text-center text-red-500">Could not load tests. Please try refreshing the page.</p>`;
+                testsContainer.innerHTML = `<p class="text-center text-red-500 col-span-full">Failed to load tests. Please check the console for errors.</p>`;
             }
         }
     </script>
-
 </body>
 </html>
