@@ -12,14 +12,13 @@
         /* --- Core Theme (Unchanged) --- */
         body { 
             font-family: 'Inter', sans-serif;
-            opacity: 0; /* Start hidden for page transition */
-            transition: opacity 0.5s ease-in-out;
+            /* Opacity removed for debugging the loader */
         }
         .bg-custom-blue { background-color: #1E90FF; }
         .text-custom-blue { color: #1E90FF; }
-        html { scroll-behavior: smooth; } /* Added for smooth scrolling */
+        html { scroll-behavior: smooth; }
 
-        /* --- Page Loader --- */
+        /* --- Page Loader (Modified) --- */
         .loader {
             position: fixed;
             top: 0;
@@ -28,14 +27,13 @@
             height: 100%;
             background: #ffffff;
             z-index: 9999;
-            display: flex;
+            display: flex; /* This will be changed to 'none' by JS */
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
         }
+        /* This class is now used to force-hide the loader */
         .loader.hidden {
-            opacity: 0;
-            visibility: hidden;
+            display: none;
         }
         .loader-text {
             font-size: 2.5rem;
@@ -44,13 +42,11 @@
             animation: glow 1.5s ease-in-out infinite alternate;
         }
 
-        /* --- Animations --- */
+        /* --- Animations (Unchanged) --- */
         @keyframes glow {
             from { text-shadow: 0 0 5px #1E90FF, 0 0 10px #1E90FF; }
             to { text-shadow: 0 0 20px #87CEFA, 0 0 30px #87CEFA; }
         }
-
-        /* Scroll-based Animations */
         .reveal {
             opacity: 0;
             transform: translateY(30px);
@@ -60,8 +56,6 @@
             opacity: 1;
             transform: translateY(0);
         }
-
-        /* Hover & Transition Enhancements */
         .nav-link {
             position: relative;
             transition: color 0.3s ease;
@@ -80,7 +74,6 @@
         .nav-link:hover::after {
             width: 100%;
         }
-
         .cta-button {
             transition: all 0.3s ease;
         }
@@ -88,7 +81,6 @@
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 10px 20px -10px rgba(30, 144, 255, 0.5);
         }
-
         .mobile-menu { 
             transition: transform 0.3s ease-in-out; 
         }
@@ -103,14 +95,14 @@
 
     <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="text-2xl font-bold text-custom-blue page-link">CETPrep.in</a>
+            <a href="index.html" class="text-2xl font-bold text-custom-blue">CETPrep.in</a>
             <div class="hidden md:flex items-center space-x-8">
-                <a href="index.html" class="text-gray-600 hover:text-custom-blue nav-link font-medium page-link">Home</a>
-                <a href="mock-test-library.html" class="text-gray-600 hover:text-custom-blue nav-link font-medium page-link">Mock Tests</a>
-                <a href="ai-tutor.html" class="text-gray-600 hover:text-custom-blue nav-link font-medium page-link">AI Tutor</a>
+                <a href="index.html" class="text-gray-600 hover:text-custom-blue nav-link font-medium">Home</a>
+                <a href="mock-test-library.html" class="text-gray-600 hover:text-custom-blue nav-link font-medium">Mock Tests</a>
+                <a href="ai-tutor.html" class="text-gray-600 hover:text-custom-blue nav-link font-medium">AI Tutor</a>
                 <a href="#" class="text-gray-600 hover:text-custom-blue nav-link font-medium">Notes & Resources</a>
             </div>
-             <a href="login.html" class="hidden md:block bg-custom-blue text-white font-semibold px-5 py-2 rounded-lg shadow-sm cta-button page-link">
+             <a href="login.html" class="hidden md:block bg-custom-blue text-white font-semibold px-5 py-2 rounded-lg shadow-sm cta-button">
                 Login / Sign Up
             </a>
             <div class="md:hidden">
@@ -128,11 +120,11 @@
             </button>
         </div>
         <div class="flex flex-col items-center justify-center h-full -mt-16 space-y-6 text-xl">
-             <a href="index.html" class="text-gray-800 hover:text-custom-blue page-link">Home</a>
-            <a href="mock-test-library.html" class="text-gray-800 hover:text-custom-blue page-link">Mock Tests</a>
-            <a href="ai-tutor.html" class="text-gray-800 hover:text-custom-blue page-link">AI Tutor</a>
+             <a href="index.html" class="text-gray-800 hover:text-custom-blue">Home</a>
+            <a href="mock-test-library.html" class="text-gray-800 hover:text-custom-blue">Mock Tests</a>
+            <a href="ai-tutor.html" class="text-gray-800 hover:text-custom-blue">AI Tutor</a>
             <a href="#" class="text-gray-800 hover:text-custom-blue">Notes & Resources</a>
-            <a href="login.html" class="mt-4 bg-custom-blue text-white font-semibold px-6 py-3 rounded-lg page-link">Login / Sign Up</a>
+            <a href="login.html" class="mt-4 bg-custom-blue text-white font-semibold px-6 py-3 rounded-lg">Login / Sign Up</a>
         </div>
     </div>
 
@@ -143,8 +135,8 @@
                 <h1 class="text-4xl md:text-6xl font-extrabold text-gray-800 mb-4">Crack CET With <span class="text-custom-blue">Smarter Prep</span></h1>
                 <p class="text-lg md:text-xl text-gray-600 mb-8">Your all-in-one platform for mock tests, personalized expert notes, and data-driven college predictions.</p>
                 <div class="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
-                    <a href="mock-test-library.html" class="bg-custom-blue text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg cta-button page-link">Start a Free Mock Test</a>
-                    <a href="ai-tutor.html" class="bg-gray-200 text-gray-800 font-bold text-lg px-8 py-4 rounded-lg shadow-lg cta-button page-link">Ask AI Tutor</a>
+                    <a href="mock-test-library.html" class="bg-custom-blue text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg cta-button">Start a Free Mock Test</a>
+                    <a href="ai-tutor.html" class="bg-gray-200 text-gray-800 font-bold text-lg px-8 py-4 rounded-lg shadow-lg cta-button">Ask AI Tutor</a>
                 </div>
             </div>
             <div class="md:w-1/2 flex justify-center">
@@ -187,32 +179,15 @@
 
     </main>
     <script>
-        // --- System-wide Animation Control ---
+        // --- Simplified Loader Control (for debugging) ---
         document.addEventListener('DOMContentLoaded', () => {
             const loader = document.querySelector('.loader');
-            const body = document.querySelector('body');
-
-            // Show loader for 1.5 seconds
+            // Force hide loader after 1.5 seconds
             setTimeout(() => {
-                loader.classList.add('hidden');
-                body.style.opacity = '1'; // Fade in page content
+                if(loader) {
+                    loader.classList.add('hidden');
+                }
             }, 1500);
-
-            // Page Transitions
-            const pageLinks = document.querySelectorAll('.page-link');
-            pageLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    const href = link.getAttribute('href');
-                    // Prevent navigation only for same-page links
-                    if (href && href !== '#' && !href.startsWith('mailto:')) {
-                        e.preventDefault();
-                        body.style.opacity = '0'; // Fade out current page
-                        setTimeout(() => {
-                            window.location.href = href;
-                        }, 500); // Wait for fade-out to finish
-                    }
-                });
-            });
         });
 
         // --- Mobile Menu ---
@@ -226,16 +201,6 @@
         closeBtn.addEventListener('click', () => {
             mobileMenu.classList.add('-translate-x-full');
             setTimeout(() => mobileMenu.classList.add('hidden'), 300);
-        });
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                const href = link.getAttribute('href');
-                if(href && href !== '#') {
-                    e.preventDefault();
-                    document.querySelector('body').style.opacity = '0';
-                    setTimeout(() => { window.location.href = href; }, 500);
-                }
-            });
         });
 
         // --- Scroll Animation ---
