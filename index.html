@@ -9,86 +9,86 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* --- Core Theme (Unchanged) --- */
-        body { 
-            font-family: 'Inter', sans-serif;
-            /* Opacity removed for debugging the loader */
-        }
+        body { font-family: 'Inter', sans-serif; }
         .bg-custom-blue { background-color: #1E90FF; }
         .text-custom-blue { color: #1E90FF; }
         html { scroll-behavior: smooth; }
 
-        /* --- Page Loader (Modified) --- */
-        .loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            z-index: 9999;
-            display: flex; /* This will be changed to 'none' by JS */
-            align-items: center;
-            justify-content: center;
+        /* --- New Background Animation --- */
+        .hero-section {
+            position: relative;
+            overflow: hidden; /* Keeps shapes contained */
         }
-        /* This class is now used to force-hide the loader */
-        .loader.hidden {
-            display: none;
+        .bg-shape {
+            position: absolute;
+            opacity: 0.1; /* Very subtle */
+            animation: float 20s ease-in-out infinite alternate;
         }
-        .loader-text {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #1E90FF;
-            animation: glow 1.5s ease-in-out infinite alternate;
+        .bg-shape.shape-1 {
+            width: 150px;
+            height: 150px;
+            top: 10%;
+            left: 5%;
+            animation-duration: 25s;
+        }
+        .bg-shape.shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: 15%;
+            right: 10%;
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+        .bg-shape.shape-3 {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            right: 20%;
+            animation-duration: 18s;
+        }
+         .bg-shape.shape-4 {
+            width: 120px;
+            height: 120px;
+            bottom: 5%;
+            left: 25%;
+            animation-duration: 22s;
+            animation-delay: -10s;
         }
 
-        /* --- Animations (Unchanged) --- */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg) scale(1.1); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+        
+        /* --- Loader and Page Transitions --- */
+        /* ... existing animation styles ... */
+        .loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff; z-index: 9999; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .loader.hidden { display: none; }
+        .loader-text {
+            font-size: 2.5rem; font-weight: 800; color: #1E90FF;
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
         @keyframes glow {
-            from { text-shadow: 0 0 5px #1E90FF, 0 0 10px #1E90FF; }
-            to { text-shadow: 0 0 20px #87CEFA, 0 0 30px #87CEFA; }
+            from { text-shadow: 0 0 5px #1E90FF; }
+            to { text-shadow: 0 0 20px #87CEFA; }
         }
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .nav-link {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
-            left: 50%;
-            background-color: #1E90FF;
-            transition: all 0.3s ease-out;
-            transform: translateX(-50%);
-        }
-        .nav-link:hover::after {
-            width: 100%;
-        }
-        .cta-button {
-            transition: all 0.3s ease;
-        }
-        .cta-button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 20px -10px rgba(30, 144, 255, 0.5);
-        }
-        .mobile-menu { 
-            transition: transform 0.3s ease-in-out; 
-        }
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .nav-link { position: relative; transition: color 0.3s ease; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 50%; background-color: #1E90FF; transition: all 0.3s ease-out; transform: translateX(-50%); }
+        .nav-link:hover::after { width: 100%; }
+        .cta-button { transition: all 0.3s ease; }
+        .cta-button:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 10px 20px -10px rgba(30, 144, 255, 0.5); }
+        .mobile-menu { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
 <body class="bg-white text-gray-800">
 
-    <!-- Page Loader -->
     <div class="loader">
         <div class="loader-text">CETPrep.in</div>
     </div>
@@ -130,7 +130,15 @@
 
     <main class="pt-20">
         <!-- Hero Section -->
-        <section class="min-h-screen container mx-auto px-6 flex flex-col md:flex-row items-center justify-center">
+        <section class="hero-section min-h-screen container mx-auto px-6 flex flex-col md:flex-row items-center justify-center">
+            <!-- Animated Background Shapes -->
+            <div class="absolute inset-0 z-[-1]">
+                <div class="bg-shape shape-1 bg-custom-blue rounded-full"></div>
+                <div class="bg-shape shape-2 bg-blue-200 rounded-full"></div>
+                <div class="bg-shape shape-3 bg-custom-blue" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
+                <div class="bg-shape shape-4 bg-blue-200" style="clip-path: polygon(50% 0%, 0% 100%, 100% 100%); transform: rotate(45deg);"></div>
+            </div>
+
             <div class="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
                 <h1 class="text-4xl md:text-6xl font-extrabold text-gray-800 mb-4">Crack CET With <span class="text-custom-blue">Smarter Prep</span></h1>
                 <p class="text-lg md:text-xl text-gray-600 mb-8">Your all-in-one platform for mock tests, personalized expert notes, and data-driven college predictions.</p>
@@ -176,17 +184,13 @@
                 </div>
             </div>
         </section>
-
     </main>
+
     <script>
-        // --- Simplified Loader Control (for debugging) ---
         document.addEventListener('DOMContentLoaded', () => {
             const loader = document.querySelector('.loader');
-            // Force hide loader after 1.5 seconds
             setTimeout(() => {
-                if(loader) {
-                    loader.classList.add('hidden');
-                }
+                if(loader) loader.classList.add('hidden');
             }, 1500);
         });
 
