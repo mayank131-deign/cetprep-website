@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preppy - Your AI Tutor | CETPrep.in</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-custom-blue { background-color: #1E90FF; }
+        .text-custom-blue { color: #1E90FF; }
+        #chat-window { scroll-behavior: smooth; }
+        /* Styling for the thinking indicator */
+        .dot-flashing {
+            position: relative;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+            background-color: #1E90FF;
+            color: #1E90FF;
+            animation: dotFlashing 1s infinite linear alternate;
+            animation-delay: .5s;
+        }
+        .dot-flashing::before, .dot-flashing::after {
+            content: '';
+            display: inline-block;
+            position: absolute;
+            top: 0;
+        }
+        .dot-flashing::before {
+            left: -15px;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+            background-color: #1E90FF;
+            color: #1E90FF;
+            animation: dotFlashing 1s infinite alternate;
+            animation-delay: 0s;
+        }
+        .dot-flashing::after {
+            left: 15px;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+            background-color: #1E90FF;
+            color: #1E90FF;
+            animation: dotFlashing 1s infinite alternate;
+            animation-delay: 1s;
+        }
+        @keyframes dotFlashing {
+            0% { background-color: #1E90FF; }
+            50%, 100% { background-color: #87CEFA; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col h-screen">
+
+    <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-custom-blue">CETPrep.in</a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="text-gray-600 hover:text-custom-blue font-medium">Home</a>
+                <a href="mock-test-library.html" class="text-gray-600 hover:text-custom-blue font-medium">Mock Tests</a>
+                <a href="preppy.html" class="text-custom-blue font-bold">Preppy</a>
+                <a href="#" class="text-gray-600 hover:text-custom-blue font-medium">Notes & Resources</a>
+            </div>
+            <div id="user-info" class="text-gray-600 font-medium">
+                <!-- User email appears here -->
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow pt-24 pb-20">
+        <div id="chat-container" class="max-w-3xl mx-auto h-full flex flex-col bg-white rounded-lg shadow-lg">
+            <div class="p-4 border-b text-center">
+                <h1 class="text-2xl font-bold text-gray-800">Preppy - Your AI Tutor 🤖</h1>
+                <p class="text-gray-500">Ask me any question about your studies!</p>
+            </div>
+            <div id="chat-window" class="flex-grow p-6 space-y-4 overflow-y-auto">
+                <!-- Chat Messages Appear Here -->
+                <div class="flex items-end">
+                    <div class="bg-gray-200 text-gray-800 p-3 rounded-lg max-w-lg">
+                        <p>Hello! I'm Preppy. How can I help you prepare for the CET today? Feel free to ask me anything from "Explain Newton's First Law" to "Summarize the plot of Hamlet."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-gray-50 border-t">
+                <form id="chat-form" class="flex items-center space-x-3">
+                    <input type="text" id="chat-input" placeholder="Type your question here..." class="flex-grow px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-blue" autocomplete="off" required>
+                    <button type="submit" class="bg-custom-blue text-white font-bold px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA27xWBpD6sf_eXyzoVrj6ed6zu2VkMQKc",
+            authDomain: "cetprep-backend.firebaseapp.com",
+            projectId: "cetprep-backend",
+            storageBucket: "cetprep-backend.firebasestorage.app",
+            messagingSenderId: "456401176351",
+            appId: "1:456401176351:web:30bb6b333a0e8a42af122a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const chatWindow = document.getElementById('chat-window');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const userInfo = document.getElementById('user-info');
+        
+        let currentUser = null;
+
+        // Protect the page
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                userInfo.textContent = user.email;
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Handle sending a message
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userMessage = chatInput.value.trim();
+            if (!userMessage) return;
+
+            // Display user's message
+            addMessage(userMessage, 'user');
+            chatInput.value = '';
+
+            // Show thinking indicator
+            const thinkingId = addMessage('', 'thinking');
+
+            // Call the AI
+            try {
+                const aiResponse = await getAIResponse(userMessage);
+                removeMessage(thinkingId);
+                addMessage(aiResponse, 'ai');
+            } catch (error) {
+                console.error("AI Error:", error);
+                removeMessage(thinkingId);
+                addMessage("Sorry, I'm having a little trouble thinking right now. Please try again in a moment.", 'ai');
+            }
+        });
+
+        function addMessage(text, sender) {
+            const messageId = 'msg-' + Date.now();
+            let messageElement;
+            
+            if (sender === 'user') {
+                messageElement = `
+                    <div id="${messageId}" class="flex items-end justify-end">
+                        <div class="bg-custom-blue text-white p-3 rounded-lg max-w-lg">
+                            <p>${text}</p>
+                        </div>
+                    </div>`;
+            } else if (sender === 'ai') {
+                 messageElement = `
+                    <div id="${messageId}" class="flex items-end">
+                        <div class="bg-gray-200 text-gray-800 p-3 rounded-lg max-w-lg">
+                            <p>${text.replace(/\n/g, '<br>')}</p> 
+                        </div>
+                    </div>`;
+            } else if (sender === 'thinking') {
+                messageElement = `
+                    <div id="${messageId}" class="flex items-end">
+                        <div class="bg-gray-200 text-gray-800 p-3 rounded-lg">
+                            <div class="dot-flashing"></div>
+                        </div>
+                    </div>`;
+            }
+
+            chatWindow.insertAdjacentHTML('beforeend', messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+            return messageId;
+        }
+        
+        function removeMessage(id) {
+            const message = document.getElementById(id);
+            if (message) message.remove();
+        }
+
+        // Gemini API Call
+        async function getAIResponse(prompt) {
+            const apiKey = ""; // Canvas will provide this at runtime
+            const apiUrl = \`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=\${apiKey}\`;
+            
+            const payload = {
+                contents: [{
+                    parts: [{ text: "You are Preppy, a friendly and helpful AI tutor for students preparing for the CET exam. Keep your answers clear, concise, and encouraging. Explain concepts simply. \n\n User Question: " + prompt }]
+                }],
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(\`API request failed with status \${response.status}\`);
+            }
+
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                 return "I'm not sure how to answer that. Could you ask in a different way?";
+            }
+        }
+    </script>
+</body>
+</html>
