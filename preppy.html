@@ -68,7 +68,7 @@
                 <a href="#" class="text-gray-600 hover:text-custom-blue font-medium">Notes & Resources</a>
             </div>
             <div id="user-info" class="text-gray-600 font-medium">
-                <!-- User email appears here -->
+                Checking login status...
             </div>
         </nav>
     </header>
@@ -83,14 +83,14 @@
                 <!-- Chat Messages Appear Here -->
                 <div class="flex items-end">
                     <div class="bg-gray-200 text-gray-800 p-3 rounded-lg max-w-lg">
-                        <p>Hello! I'm Preppy. How can I help you prepare for the CET today? Feel free to ask me anything from "Explain Newton's First Law" to "Summarize the plot of Hamlet."</p>
+                        <p>Hello! I'm Preppy. Please wait a moment while I check if you're logged in.</p>
                     </div>
                 </div>
             </div>
             <div class="p-4 bg-gray-50 border-t">
                 <form id="chat-form" class="flex items-center space-x-3">
-                    <input type="text" id="chat-input" placeholder="Type your question here..." class="flex-grow px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-blue" autocomplete="off" required>
-                    <button type="submit" class="bg-custom-blue text-white font-bold px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center">
+                    <input type="text" id="chat-input" placeholder="Please log in to chat with Preppy..." class="flex-grow px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-blue" autocomplete="off" required disabled>
+                    <button type="submit" id="submit-btn" class="bg-custom-blue text-white font-bold px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                     </button>
                 </form>
@@ -99,8 +99,12 @@
     </main>
 
     <script type="module">
+        console.log("Preppy AI Tutor script loaded.");
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        
+        console.log("Firebase SDKs imported.");
 
         const firebaseConfig = {
             apiKey: "AIzaSyA27xWBpD6sf_eXyzoVrj6ed6zu2VkMQKc",
@@ -113,44 +117,53 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        console.log("Firebase initialized.");
 
         const chatWindow = document.getElementById('chat-window');
         const chatForm = document.getElementById('chat-form');
         const chatInput = document.getElementById('chat-input');
+        const submitBtn = document.getElementById('submit-btn');
         const userInfo = document.getElementById('user-info');
         
-        let currentUser = null;
-
-        // Protect the page
+        // Protect the page and enable functionality
         onAuthStateChanged(auth, (user) => {
+            console.log("Auth state changed. Checking for user...");
             if (user) {
-                currentUser = user;
+                console.log("SUCCESS: User is signed in.", user.email);
                 userInfo.textContent = user.email;
+                chatInput.disabled = false;
+                submitBtn.disabled = false;
+                chatInput.placeholder = "Type your question here...";
+                document.querySelector('#chat-window p').textContent = `Hello ${user.email}! How can I help you prepare for the CET today?`;
+
             } else {
-                window.location.href = 'login.html';
+                console.error("FAILURE: User is not signed in. Redirecting to login.");
+                // Redirect after a short delay to allow user to see the message
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
             }
         });
 
         // Handle sending a message
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log("Chat form submitted.");
             const userMessage = chatInput.value.trim();
             if (!userMessage) return;
 
-            // Display user's message
             addMessage(userMessage, 'user');
             chatInput.value = '';
-
-            // Show thinking indicator
             const thinkingId = addMessage('', 'thinking');
 
-            // Call the AI
             try {
+                console.log("Calling AI API...");
                 const aiResponse = await getAIResponse(userMessage);
+                console.log("AI response received:", aiResponse);
                 removeMessage(thinkingId);
                 addMessage(aiResponse, 'ai');
             } catch (error) {
-                console.error("AI Error:", error);
+                console.error("AI API Error:", error);
                 removeMessage(thinkingId);
                 addMessage("Sorry, I'm having a little trouble thinking right now. Please try again in a moment.", 'ai');
             }
@@ -158,32 +171,17 @@
 
         function addMessage(text, sender) {
             const messageId = 'msg-' + Date.now();
-            let messageElement;
+            let messageElementHTML;
             
             if (sender === 'user') {
-                messageElement = `
-                    <div id="${messageId}" class="flex items-end justify-end">
-                        <div class="bg-custom-blue text-white p-3 rounded-lg max-w-lg">
-                            <p>${text}</p>
-                        </div>
-                    </div>`;
+                messageElementHTML = `<div id="${messageId}" class="flex items-end justify-end"><div class="bg-custom-blue text-white p-3 rounded-lg max-w-lg"><p>${text}</p></div></div>`;
             } else if (sender === 'ai') {
-                 messageElement = `
-                    <div id="${messageId}" class="flex items-end">
-                        <div class="bg-gray-200 text-gray-800 p-3 rounded-lg max-w-lg">
-                            <p>${text.replace(/\n/g, '<br>')}</p> 
-                        </div>
-                    </div>`;
+                 messageElementHTML = `<div id="${messageId}" class="flex items-end"><div class="bg-gray-200 text-gray-800 p-3 rounded-lg max-w-lg"><p>${text.replace(/\n/g, '<br>')}</p></div></div>`;
             } else if (sender === 'thinking') {
-                messageElement = `
-                    <div id="${messageId}" class="flex items-end">
-                        <div class="bg-gray-200 text-gray-800 p-3 rounded-lg">
-                            <div class="dot-flashing"></div>
-                        </div>
-                    </div>`;
+                messageElementHTML = `<div id="${messageId}" class="flex items-end"><div class="bg-gray-200 text-gray-800 p-3 rounded-lg"><div class="dot-flashing"></div></div></div>`;
             }
 
-            chatWindow.insertAdjacentHTML('beforeend', messageElement);
+            chatWindow.insertAdjacentHTML('beforeend', messageElementHTML);
             chatWindow.scrollTop = chatWindow.scrollHeight;
             return messageId;
         }
@@ -193,15 +191,12 @@
             if (message) message.remove();
         }
 
-        // Gemini API Call
         async function getAIResponse(prompt) {
-            const apiKey = ""; // Canvas will provide this at runtime
+            const apiKey = ""; 
             const apiUrl = \`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=\${apiKey}\`;
             
             const payload = {
-                contents: [{
-                    parts: [{ text: "You are Preppy, a friendly and helpful AI tutor for students preparing for the CET exam. Keep your answers clear, concise, and encouraging. Explain concepts simply. \n\n User Question: " + prompt }]
-                }],
+                contents: [{ parts: [{ text: "You are Preppy, a friendly and helpful AI tutor for students preparing for the CET exam. Keep your answers clear, concise, and encouraging. Explain concepts simply. \n\n User Question: " + prompt }] }],
             };
 
             const response = await fetch(apiUrl, {
@@ -211,17 +206,22 @@
             });
 
             if (!response.ok) {
+                console.error("API Response Error Status:", response.status);
+                const errorBody = await response.text();
+                console.error("API Response Error Body:", errorBody);
                 throw new Error(\`API request failed with status \${response.status}\`);
             }
 
             const result = await response.json();
             
-            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
+            if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
                 return result.candidates[0].content.parts[0].text;
             } else {
+                 console.warn("Unexpected API response structure:", result);
                  return "I'm not sure how to answer that. Could you ask in a different way?";
             }
         }
     </script>
 </body>
 </html>
+
